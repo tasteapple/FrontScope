@@ -5,6 +5,7 @@ import {
   analyzeJavaScriptContents,
   analyzeSecurityHeaders,
   analyzeSourcemapExposure,
+  analyzeSqliRisk,
   analyzeXssSignals,
   extractJavaScriptIndicators,
 } from '../analyzers';
@@ -78,6 +79,7 @@ export function assembleStaticScanResult(
   const jsIndicators = extractJavaScriptIndicators(assetContents);
   const indicators = [...htmlIndicators, ...jsIndicators];
   const endpointFindings = analyzeEndpointRisks(indicators);
+  const sqliRiskFindings = analyzeSqliRisk(assembly.response, indicators);
   const findings = [
     ...headerFindings,
     ...cookieFindings,
@@ -85,6 +87,7 @@ export function assembleStaticScanResult(
     ...xssFindings,
     ...jsContentFindings,
     ...endpointFindings,
+    ...sqliRiskFindings,
   ];
 
   return {

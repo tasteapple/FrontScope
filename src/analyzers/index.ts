@@ -4,4 +4,5 @@ export * from './exposure.analyzer';
 export * from './headers.analyzer';
 export * from './js-content.analyzer';
 export * from './sourcemap.analyzer';
+export * from './sqli-risk.analyzer';
 export * from './xss.analyzer';
