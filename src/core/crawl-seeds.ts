@@ -1,4 +1,4 @@
-import { extractSitemapUrls } from '../extractors';
+import { extractEnterpriseRoutes, extractSitemapUrls } from '../extractors';
 import type { ScanResult } from '../models';
 import { fetchWithMetadata } from '../utils';
 
@@ -33,6 +33,17 @@ export async function collectAdditionalCrawlSeeds(
 
   for (const url of collectIndicatorUrls(pageResult)) {
     urls.add(url);
+  }
+
+  const html = pageResult.response?.html ?? '';
+  for (const url of extractEnterpriseRoutes(html, pageResult.metadata.normalizedUrl)) {
+    urls.add(url);
+  }
+
+  for (const assetContent of pageResult.assetContents ?? []) {
+    for (const url of extractEnterpriseRoutes(assetContent.body, pageResult.metadata.normalizedUrl)) {
+      urls.add(url);
+    }
   }
 
   try {
