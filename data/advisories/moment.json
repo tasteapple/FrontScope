@@ -1,0 +1,14 @@
+[
+  {
+    "library": "moment",
+    "advisoryId": "MOMENT-LEGACY-001",
+    "title": "Legacy Moment.js branch detected",
+    "severity": "low",
+    "affectedVersions": ["2.29.1"],
+    "affectedRanges": ["<2.29.4"],
+    "summary": "Older Moment.js versions should be reviewed for maintenance status and upgrade planning.",
+    "references": [
+      "https://momentjs.com/docs/"
+    ]
+  }
+]

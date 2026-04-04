@@ -1,0 +1,14 @@
+[
+  {
+    "library": "axios",
+    "advisoryId": "AXIOS-LEGACY-001",
+    "title": "Legacy Axios branch detected",
+    "severity": "medium",
+    "affectedVersions": ["0.21.1", "0.27.2"],
+    "affectedRanges": ["<1.6.0"],
+    "summary": "Older Axios versions should be reviewed against current maintenance and advisory guidance.",
+    "references": [
+      "https://github.com/axios/axios/releases"
+    ]
+  }
+]

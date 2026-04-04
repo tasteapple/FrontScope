@@ -1,0 +1,14 @@
+[
+  {
+    "library": "lodash",
+    "advisoryId": "LODASH-LEGACY-001",
+    "title": "Legacy Lodash branch detected",
+    "severity": "medium",
+    "affectedVersions": ["4.17.20"],
+    "affectedRanges": ["<4.17.21"],
+    "summary": "Older Lodash releases should be reviewed for known security issues and upgrade planning.",
+    "references": [
+      "https://github.com/lodash/lodash/releases"
+    ]
+  }
+]

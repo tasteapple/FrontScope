@@ -1,0 +1,14 @@
+[
+  {
+    "library": "bootstrap",
+    "advisoryId": "BOOTSTRAP-LEGACY-001",
+    "title": "Legacy Bootstrap branch detected",
+    "severity": "medium",
+    "affectedVersions": ["3.4.1", "4.3.1"],
+    "affectedRanges": ["<5.0.0"],
+    "summary": "Older Bootstrap branches should be reviewed for current support status and historical security issues.",
+    "references": [
+      "https://getbootstrap.com/docs/"
+    ]
+  }
+]
