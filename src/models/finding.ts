@@ -9,7 +9,12 @@ export type FindingCategory =
   | 'third-party'
   | 'storage'
   | 'configuration'
-  | 'exposure';
+  | 'exposure'
+  | 'xss'
+  | 'endpoint'
+  | 'sqli-risk'
+  | 'input-handling'
+  | 'dom';
 
 export interface Finding {
   id: string;

@@ -8,7 +8,7 @@ function renderFindings(findings: Finding[]): string {
   return findings
     .map(
       (finding, index) => `### ${index + 1}. ${finding.title}\n
-- Severity: ${finding.severity}\n- Category: ${finding.category}\n- Target: ${finding.target}\n- Description: ${finding.description}\n- Evidence:\n${finding.evidence.map((item) => `  - ${item}`).join('\n')}\n- Recommendation: ${finding.recommendation}\n`,
+- Severity: ${finding.severity}\n- Category: ${finding.category}\n- Target: ${finding.target}\n- Description: ${finding.description}\n- Evidence:\n${finding.evidence.map((item: string) => `  - ${item}`).join('\n')}\n- Recommendation: ${finding.recommendation}\n`,
     )
     .join('\n');
 }
@@ -51,6 +51,6 @@ ${renderFindings(result.findings)}
 ${renderIndicators(result.indicators)}
 ## Errors / 오류
 
-${result.errors.length ? result.errors.map((error) => `- ${error}`).join('\n') : '- No errors.'}
+${result.errors.length ? result.errors.map((error: string) => `- ${error}`).join('\n') : '- No errors.'}
 `;
 }

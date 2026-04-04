@@ -1,4 +1,11 @@
-import { analyzeExposureIndicators, analyzeSecurityHeaders, analyzeSourcemapExposure } from '../analyzers';
+import {
+  analyzeCookies,
+  analyzeEndpointRisks,
+  analyzeExposureIndicators,
+  analyzeSecurityHeaders,
+  analyzeSourcemapExposure,
+  analyzeXssSignals,
+} from '../analyzers';
 import type {
   CollectedAsset,
   RedirectEntry,
@@ -58,9 +65,18 @@ export function assembleStaticScanResult(
   const assets = assembly.assets ?? [];
   const errors = assembly.errors ?? [];
   const headerFindings = analyzeSecurityHeaders(assembly.response);
+  const cookieFindings = analyzeCookies(assembly.response);
   const sourcemapFindings = analyzeSourcemapExposure(assembly.response);
+  const xssFindings = analyzeXssSignals(assembly.response);
   const indicators = analyzeExposureIndicators(assembly.response);
-  const findings = [...headerFindings, ...sourcemapFindings];
+  const endpointFindings = analyzeEndpointRisks(indicators);
+  const findings = [
+    ...headerFindings,
+    ...cookieFindings,
+    ...sourcemapFindings,
+    ...xssFindings,
+    ...endpointFindings,
+  ];
 
   return {
     metadata: assembly.metadata,
