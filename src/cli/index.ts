@@ -2,11 +2,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
+  collectAsset,
   collectRedirects,
   collectResponseSnapshot,
   collectHtmlDocument,
 } from '../collectors';
 import { assembleStaticScanResult, buildTargetMetadata } from '../core';
+import { extractAssetCandidates } from '../extractors';
 import { renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
 import { fetchWithMetadata } from '../utils';
@@ -49,13 +51,27 @@ async function main(): Promise<void> {
     },
     htmlDocument.html,
   );
+  const assetCandidates = extractAssetCandidates(
+    htmlDocument.html,
+    fetchResult.finalUrl,
+  );
+  const assets = assetCandidates.map((candidate) =>
+    collectAsset({
+      url: candidate.url,
+      type: candidate.type,
+      source: candidate.source,
+      pageOrigin: metadata.origin,
+      integrity: candidate.integrity,
+      attributes: candidate.attributes,
+    }),
+  );
 
   const result = assembleStaticScanResult({
     input,
     metadata,
     redirects,
     response,
-    assets: [],
+    assets,
     errors: [],
   });
 
