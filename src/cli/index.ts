@@ -1,9 +1,15 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import {
+  collectRedirects,
+  collectResponseSnapshot,
+  collectHtmlDocument,
+} from '../collectors';
 import { assembleStaticScanResult, buildTargetMetadata } from '../core';
 import { renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
+import { fetchWithMetadata } from '../utils';
 
 function buildDefaultScanInput(targetUrl: string): ScanInput {
   return {
@@ -16,7 +22,7 @@ function buildDefaultScanInput(targetUrl: string): ScanInput {
   };
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const targetUrl = process.argv[2];
 
   if (!targetUrl) {
@@ -26,12 +32,31 @@ function main(): void {
 
   const input = buildDefaultScanInput(targetUrl);
   const metadata = buildTargetMetadata(input);
+  const fetchResult = await fetchWithMetadata(input.targetUrl);
+  const htmlDocument = collectHtmlDocument(fetchResult.body);
+  const redirects = collectRedirects({
+    originalUrl: fetchResult.originalUrl,
+    finalUrl: fetchResult.finalUrl,
+    redirectChain: fetchResult.redirectChain,
+  });
+  const response = collectResponseSnapshot(
+    {
+      finalUrl: fetchResult.finalUrl,
+      statusCode: fetchResult.statusCode,
+      headers: fetchResult.headers,
+      contentType: fetchResult.contentType,
+      bodyLength: htmlDocument.bodyLength,
+    },
+    htmlDocument.html,
+  );
+
   const result = assembleStaticScanResult({
     input,
     metadata,
-    redirects: [],
+    redirects,
+    response,
     assets: [],
-    errors: ['Static fetch integration is not implemented yet.'],
+    errors: [],
   });
 
   const outputDir = join(process.cwd(), 'reports');
@@ -43,4 +68,8 @@ function main(): void {
   console.log(`FrontScope report generated in ${outputDir}`);
 }
 
-main();
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`FrontScope scan failed: ${message}`);
+  process.exit(1);
+});
