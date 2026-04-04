@@ -1,5 +1,10 @@
 import type { Finding, LibraryAdvisory, LibraryDetection } from '../models';
-import { loadLocalAdvisories, matchesAffectedRange } from '../utils';
+import {
+  fetchRemoteAdvisories,
+  loadCachedRemoteAdvisories,
+  loadLocalAdvisories,
+  matchesAffectedRange,
+} from '../utils';
 
 function findMatchingAdvisories(
   detection: LibraryDetection,
@@ -19,17 +24,35 @@ function findMatchingAdvisories(
   });
 }
 
-export function mapLibraryDetectionsToFindings(
+export async function mapLibraryDetectionsToFindings(
   detections: LibraryDetection[],
-): Finding[] {
+): Promise<Finding[]> {
   const findings: Finding[] = [];
 
   for (const detection of detections) {
-    const advisories = loadLocalAdvisories(detection.name);
-    const matches = findMatchingAdvisories(detection, advisories);
+    const localAdvisories = loadLocalAdvisories(detection.name);
+    const cachedRemoteAdvisories = loadCachedRemoteAdvisories(detection.name);
+    const localMatches = findMatchingAdvisories(detection, localAdvisories);
+    const cachedMatches = findMatchingAdvisories(detection, cachedRemoteAdvisories);
 
-    if (matches.length) {
-      for (const advisory of matches) {
+    let effectiveMatches = [...localMatches, ...cachedMatches];
+    let sourceLabel = localMatches.length
+      ? 'local'
+      : cachedMatches.length
+        ? 'remote-cache'
+        : 'none';
+
+    if (!effectiveMatches.length) {
+      const remoteAdvisories = await fetchRemoteAdvisories(detection.name).catch(() => []);
+      const remoteMatches = findMatchingAdvisories(detection, remoteAdvisories);
+      if (remoteMatches.length) {
+        effectiveMatches = remoteMatches;
+        sourceLabel = 'remote-live';
+      }
+    }
+
+    if (effectiveMatches.length) {
+      for (const advisory of effectiveMatches) {
         findings.push({
           id: `library-advisory:${detection.name}:${detection.version}:${advisory.advisoryId}`,
           title: `Library advisory match: ${detection.name} ${detection.version}`,
@@ -42,6 +65,7 @@ export function mapLibraryDetectionsToFindings(
             `Advisory ID: ${advisory.advisoryId}`,
             `Affected versions: ${advisory.affectedVersions.join(', ') || 'none'}`,
             `Affected ranges: ${advisory.affectedRanges?.join(', ') || 'none'}`,
+            `Advisory source: ${sourceLabel}`,
             `Confidence: ${detection.confidence}`,
           ],
           recommendation: 'Review the detected library version against current supported releases and upgrade guidance.',
@@ -58,9 +82,9 @@ export function mapLibraryDetectionsToFindings(
       severity: 'low',
       category: 'javascript',
       target: detection.sourceAsset,
-      description: 'A library was detected in fetched JavaScript, but no local advisory mapping matched the detected version.',
+      description: 'A library was detected in fetched JavaScript, but no advisory mapping matched the detected version in local or remote sources.',
       evidence: [...detection.evidence, `Confidence: ${detection.confidence}`],
-      recommendation: 'Add or fetch advisory metadata for this library/version to improve version-aware security assessment.',
+      recommendation: 'Expand advisory coverage or add a stronger detector/mapping rule for this library/version.',
     });
   }
 

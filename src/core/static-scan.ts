@@ -82,7 +82,7 @@ export async function assembleStaticScanResult(
   const jsContentFindings = analyzeJavaScriptContents(assetContents);
   const libraryFingerprintFindings = analyzeLibraryFingerprints(assetContents);
   const libraryDetections = detectLibraries(assetContents);
-  const libraryAdvisoryFindings = mapLibraryDetectionsToFindings(libraryDetections);
+  const libraryAdvisoryFindings = await mapLibraryDetectionsToFindings(libraryDetections);
   const htmlIndicators = analyzeExposureIndicators(assembly.response);
   const jsIndicators = extractJavaScriptIndicators(assetContents);
   const indicators = [...htmlIndicators, ...jsIndicators];
