@@ -5,3 +5,4 @@ export * from './finding';
 export * from './library';
 export * from './result';
 export * from './scan';
+export * from './site-scan';

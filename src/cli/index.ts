@@ -1,25 +1,24 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import {
-  collectAsset,
-  collectRedirects,
-  collectResponseSnapshot,
-  collectHtmlDocument,
-} from '../collectors';
-import { assembleStaticScanResult, buildTargetMetadata } from '../core';
-import { extractAssetCandidates } from '../extractors';
+import { runSiteScan } from '../core';
 import { renderHtmlReport, renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
-import { fetchScriptAssetContents, fetchWithMetadata } from '../utils';
 
-function buildDefaultScanInput(targetUrl: string, enableActiveLowRisk: boolean): ScanInput {
+function buildDefaultScanInput(
+  targetUrl: string,
+  enableActiveLowRisk: boolean,
+  crawlDepth: number,
+  maxPages: number,
+): ScanInput {
   return {
     targetUrl,
     scanMode: 'static',
     followRedirects: true,
     enableBrowserCollection: false,
     enableActiveLowRisk,
+    crawlDepth,
+    maxPages,
     outputFormats: ['json', 'markdown'],
     timeoutMs: 10000,
   };
@@ -28,67 +27,42 @@ function buildDefaultScanInput(targetUrl: string, enableActiveLowRisk: boolean):
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const enableActiveLowRisk = args.includes('--active-low-risk');
+  const crawlDepth = Number(
+    args.find((arg) => arg.startsWith('--crawl-depth='))?.split('=')[1] ?? '0',
+  );
+  const maxPages = Number(
+    args.find((arg) => arg.startsWith('--max-pages='))?.split('=')[1] ?? '1',
+  );
   const targetUrl = args.find((arg) => !arg.startsWith('--'));
 
   if (!targetUrl) {
-    console.error('Usage: frontscope <url> [--active-low-risk]');
+    console.error('Usage: frontscope <url> [--active-low-risk] [--crawl-depth=N] [--max-pages=N]');
     process.exit(1);
   }
 
-  const input = buildDefaultScanInput(targetUrl, enableActiveLowRisk);
-  const metadata = buildTargetMetadata(input);
-  const fetchResult = await fetchWithMetadata(input.targetUrl);
-  const htmlDocument = collectHtmlDocument(fetchResult.body);
-  const redirects = collectRedirects({
-    originalUrl: fetchResult.originalUrl,
-    finalUrl: fetchResult.finalUrl,
-    redirectChain: fetchResult.redirectChain,
-  });
-  const response = collectResponseSnapshot(
-    {
-      finalUrl: fetchResult.finalUrl,
-      statusCode: fetchResult.statusCode,
-      headers: fetchResult.headers,
-      contentType: fetchResult.contentType,
-      bodyLength: htmlDocument.bodyLength,
-    },
-    htmlDocument.html,
+  const input = buildDefaultScanInput(
+    targetUrl,
+    enableActiveLowRisk,
+    Number.isFinite(crawlDepth) ? crawlDepth : 0,
+    Number.isFinite(maxPages) ? maxPages : 1,
   );
-  const assetCandidates = extractAssetCandidates(
-    htmlDocument.html,
-    fetchResult.finalUrl,
-  );
-  const assets = assetCandidates.map((candidate) =>
-    collectAsset({
-      url: candidate.url,
-      type: candidate.type,
-      source: candidate.source,
-      pageOrigin: metadata.origin,
-      integrity: candidate.integrity,
-      attributes: candidate.attributes,
-    }),
-  );
+  const siteResult = await runSiteScan(input);
+  const primaryResult = siteResult.scannedPages[0];
 
-  const assetContents = await fetchScriptAssetContents(assets);
-
-  const result = await assembleStaticScanResult({
-    input,
-    metadata,
-    redirects,
-    response,
-    assets,
-    assetContents,
-    errors: [],
-  });
+  if (!primaryResult) {
+    console.error('FrontScope scan failed: no pages were scanned.');
+    process.exit(1);
+  }
 
   const outputDir = join(process.cwd(), 'reports');
   mkdirSync(outputDir, { recursive: true });
 
-  writeFileSync(join(outputDir, 'report.json'), renderJsonReport(result), 'utf8');
-  writeFileSync(join(outputDir, 'report.md'), renderMarkdownReport(result), 'utf8');
-  writeFileSync(join(outputDir, 'report.html'), renderHtmlReport(result), 'utf8');
+  writeFileSync(join(outputDir, 'report.json'), renderJsonReport(primaryResult), 'utf8');
+  writeFileSync(join(outputDir, 'report.md'), renderMarkdownReport(primaryResult), 'utf8');
+  writeFileSync(join(outputDir, 'report.html'), renderHtmlReport(primaryResult), 'utf8');
+  writeFileSync(join(outputDir, 'site-report.json'), JSON.stringify(siteResult, null, 2), 'utf8');
 
-  console.log(`FrontScope report generated in ${outputDir}`);
+  console.log(`FrontScope report generated in ${outputDir} (pages scanned: ${siteResult.totalPages})`);
 }
 
 main().catch((error: unknown) => {

@@ -4,6 +4,8 @@ export interface ScanInput {
   followRedirects: boolean;
   enableBrowserCollection: boolean;
   enableActiveLowRisk?: boolean;
+  crawlDepth?: number;
+  maxPages?: number;
   outputFormats: Array<'json' | 'markdown' | 'html'>;
   timeoutMs: number;
 }
