@@ -1,5 +1,5 @@
 import type { Finding, LibraryAdvisory, LibraryDetection } from '../models';
-import { loadLocalAdvisories } from '../utils';
+import { loadLocalAdvisories, matchesAffectedRange } from '../utils';
 
 function findMatchingAdvisories(
   detection: LibraryDetection,
@@ -9,9 +9,14 @@ function findMatchingAdvisories(
     return [];
   }
 
-  return advisories.filter((advisory) =>
-    advisory.affectedVersions.some((version) => version === detection.version),
-  );
+  return advisories.filter((advisory) => {
+    const exactMatch = advisory.affectedVersions.some((version) => version === detection.version);
+    const rangeMatch = (advisory.affectedRanges ?? []).some((range) =>
+      matchesAffectedRange(detection.version!, range),
+    );
+
+    return exactMatch || rangeMatch;
+  });
 }
 
 export function mapLibraryDetectionsToFindings(
@@ -35,6 +40,8 @@ export function mapLibraryDetectionsToFindings(
           evidence: [
             ...detection.evidence,
             `Advisory ID: ${advisory.advisoryId}`,
+            `Affected versions: ${advisory.affectedVersions.join(', ') || 'none'}`,
+            `Affected ranges: ${advisory.affectedRanges?.join(', ') || 'none'}`,
             `Confidence: ${detection.confidence}`,
           ],
           recommendation: 'Review the detected library version against current supported releases and upgrade guidance.',

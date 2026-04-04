@@ -14,6 +14,7 @@ export interface LibraryAdvisory {
   title: string;
   severity: 'low' | 'medium' | 'high';
   affectedVersions: string[];
+  affectedRanges?: string[];
   summary: string;
   references?: string[];
 }
