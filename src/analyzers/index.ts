@@ -1,3 +1,4 @@
+export * from './active-low-risk.analyzer';
 export * from './cookie.analyzer';
 export * from './endpoint.analyzer';
 export * from './exposure.analyzer';

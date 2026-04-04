@@ -38,7 +38,8 @@ function normalizeTitle(title: string): string {
 }
 
 function buildFindingKey(finding: Finding): string {
-  return [finding.category, finding.target, normalizeTitle(finding.title)].join('::');
+  const firstEvidence = finding.evidence[0]?.trim().toLowerCase() ?? 'no-evidence';
+  return [finding.category, finding.target, normalizeTitle(finding.title), firstEvidence].join('::');
 }
 
 export function normalizeFindings(findings: Finding[]): Finding[] {

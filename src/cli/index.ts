@@ -13,26 +13,29 @@ import { renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
 import { fetchScriptAssetContents, fetchWithMetadata } from '../utils';
 
-function buildDefaultScanInput(targetUrl: string): ScanInput {
+function buildDefaultScanInput(targetUrl: string, enableActiveLowRisk: boolean): ScanInput {
   return {
     targetUrl,
     scanMode: 'static',
     followRedirects: true,
     enableBrowserCollection: false,
+    enableActiveLowRisk,
     outputFormats: ['json', 'markdown'],
     timeoutMs: 10000,
   };
 }
 
 async function main(): Promise<void> {
-  const targetUrl = process.argv[2];
+  const args = process.argv.slice(2);
+  const enableActiveLowRisk = args.includes('--active-low-risk');
+  const targetUrl = args.find((arg) => !arg.startsWith('--'));
 
   if (!targetUrl) {
-    console.error('Usage: frontscope <url>');
+    console.error('Usage: frontscope <url> [--active-low-risk]');
     process.exit(1);
   }
 
-  const input = buildDefaultScanInput(targetUrl);
+  const input = buildDefaultScanInput(targetUrl, enableActiveLowRisk);
   const metadata = buildTargetMetadata(input);
   const fetchResult = await fetchWithMetadata(input.targetUrl);
   const htmlDocument = collectHtmlDocument(fetchResult.body);

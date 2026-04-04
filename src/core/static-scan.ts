@@ -3,6 +3,7 @@ import {
   analyzeEndpointRisks,
   analyzeExposureIndicators,
   analyzeFetchedSourcemaps,
+  runActiveLowRiskChecks,
   analyzeJavaScriptContents,
   analyzeLibraryFingerprints,
   analyzeSecurityHeaders,
@@ -89,7 +90,7 @@ export async function assembleStaticScanResult(
   const indicators = [...htmlIndicators, ...jsIndicators];
   const endpointFindings = analyzeEndpointRisks(indicators);
   const sqliRiskFindings = analyzeSqliRisk(assembly.response, indicators);
-  const findings = normalizeFindings([
+  const preNormalizedFindings = [
     ...headerFindings,
     ...cookieFindings,
     ...htmlSourcemapFindings,
@@ -100,7 +101,32 @@ export async function assembleStaticScanResult(
     ...libraryAdvisoryFindings,
     ...endpointFindings,
     ...sqliRiskFindings,
-  ]);
+  ];
+
+  const baseResult = {
+    metadata: assembly.metadata,
+    redirects,
+    response: assembly.response,
+    assets,
+    assetContents,
+    browser: null,
+    indicators,
+    findings: normalizeFindings(preNormalizedFindings),
+    summary: {
+      ...createEmptySummary(redirects, assets),
+      totalFindings: 0,
+      severityCounts: {
+        info: 0,
+        low: 0,
+        medium: 0,
+        high: 0,
+      },
+    },
+    errors,
+  };
+
+  const activeLowRiskFindings = await runActiveLowRiskChecks(assembly.input, baseResult);
+  const findings = normalizeFindings([...preNormalizedFindings, ...activeLowRiskFindings]);
 
   return {
     metadata: assembly.metadata,

@@ -3,6 +3,7 @@ export interface ScanInput {
   scanMode: 'static' | 'hybrid';
   followRedirects: boolean;
   enableBrowserCollection: boolean;
+  enableActiveLowRisk?: boolean;
   outputFormats: Array<'json' | 'markdown' | 'html'>;
   timeoutMs: number;
 }
