@@ -1,3 +1,5 @@
+import { normalizeCrawlUrl, shouldCrawlUrl } from '../utils';
+
 export function extractSitemapUrls(xml: string, baseUrl: string): string[] {
   const urls = new Set<string>();
   const base = new URL(baseUrl);
@@ -9,9 +11,10 @@ export function extractSitemapUrls(xml: string, baseUrl: string): string[] {
 
     try {
       const resolved = new URL(raw, baseUrl);
-      resolved.hash = '';
       if (resolved.origin !== base.origin) continue;
-      urls.add(resolved.toString());
+      const normalized = normalizeCrawlUrl(resolved.toString());
+      if (!shouldCrawlUrl(normalized)) continue;
+      urls.add(normalized);
     } catch {
       // ignore malformed loc entries
     }

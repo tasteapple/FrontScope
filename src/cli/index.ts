@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { runSiteScan } from '../core';
-import { renderHtmlReport, renderJsonReport, renderMarkdownReport } from '../report';
+import { renderHtmlReport, renderJsonReport, renderMarkdownReport, renderSiteJsonReport } from '../report';
 import type { ScanInput } from '../models';
 
 function buildDefaultScanInput(
@@ -61,6 +61,7 @@ async function main(): Promise<void> {
   writeFileSync(join(outputDir, 'report.md'), renderMarkdownReport(primaryResult), 'utf8');
   writeFileSync(join(outputDir, 'report.html'), renderHtmlReport(primaryResult), 'utf8');
   writeFileSync(join(outputDir, 'site-report.json'), JSON.stringify(siteResult, null, 2), 'utf8');
+  writeFileSync(join(outputDir, 'site-summary.json'), renderSiteJsonReport(siteResult), 'utf8');
 
   console.log(`FrontScope report generated in ${outputDir} (pages scanned: ${siteResult.totalPages})`);
 }

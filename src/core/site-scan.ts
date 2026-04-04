@@ -1,5 +1,6 @@
 import { extractSameOriginLinks } from '../extractors';
 import type { ScanInput, SiteScanResult } from '../models';
+import { normalizeCrawlUrl } from '../utils';
 import { collectAdditionalCrawlSeeds } from './crawl-seeds';
 import { runSinglePageScan } from './single-page-scan';
 
@@ -12,7 +13,7 @@ export async function runSiteScan(input: ScanInput): Promise<SiteScanResult> {
   const maxDepth = input.crawlDepth ?? 0;
   const maxPages = input.maxPages ?? 1;
 
-  const queue: CrawlQueueItem[] = [{ url: input.targetUrl, depth: 0 }];
+  const queue: CrawlQueueItem[] = [{ url: normalizeCrawlUrl(input.targetUrl), depth: 0 }];
   const visited = new Set<string>();
   const scannedPages = [];
 

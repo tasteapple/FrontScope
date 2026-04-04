@@ -1,3 +1,5 @@
+import { normalizeCrawlUrl, shouldCrawlUrl } from '../utils';
+
 export function extractSameOriginLinks(html: string, baseUrl: string): string[] {
   const links = new Set<string>();
   const base = new URL(baseUrl);
@@ -10,9 +12,10 @@ export function extractSameOriginLinks(html: string, baseUrl: string): string[] 
 
     try {
       const resolved = new URL(href, baseUrl);
-      resolved.hash = '';
       if (resolved.origin !== base.origin) continue;
-      links.add(resolved.toString());
+      const normalized = normalizeCrawlUrl(resolved.toString());
+      if (!shouldCrawlUrl(normalized)) continue;
+      links.add(normalized);
     } catch {
       // ignore bad hrefs
     }
