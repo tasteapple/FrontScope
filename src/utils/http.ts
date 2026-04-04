@@ -16,14 +16,14 @@ export interface HttpFetchResult {
 function headersToObject(headers: Headers): Record<string, string | string[]> {
   const result: Record<string, string | string[]> = {};
 
-  for (const [key, value] of headers.entries()) {
+  headers.forEach((value, key) => {
     if (key in result) {
       const current = result[key];
       result[key] = Array.isArray(current) ? [...current, value] : [current, value];
     } else {
       result[key] = value;
     }
-  }
+  });
 
   return result;
 }

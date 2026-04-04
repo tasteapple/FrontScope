@@ -1,0 +1,21 @@
+{
+  "name": "frontscope",
+  "version": "0.1.0",
+  "description": "Client-side security reconnaissance and reporting tool",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli/index.js",
+    "dev": "tsx src/cli/index.ts",
+    "scan": "tsx src/cli/index.ts",
+    "smoke": "tsx src/cli/smoke-test.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}
