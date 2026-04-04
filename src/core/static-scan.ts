@@ -2,11 +2,14 @@ import {
   analyzeCookies,
   analyzeEndpointRisks,
   analyzeExposureIndicators,
+  analyzeJavaScriptContents,
   analyzeSecurityHeaders,
   analyzeSourcemapExposure,
   analyzeXssSignals,
+  extractJavaScriptIndicators,
 } from '../analyzers';
 import type {
+  AssetContent,
   CollectedAsset,
   RedirectEntry,
   ResponseSnapshot,
@@ -22,6 +25,7 @@ export interface StaticScanAssemblyInput {
   redirects?: RedirectEntry[];
   response?: ResponseSnapshot;
   assets?: CollectedAsset[];
+  assetContents?: AssetContent[];
   errors?: string[];
 }
 
@@ -63,18 +67,23 @@ export function assembleStaticScanResult(
 ): ScanResult {
   const redirects = assembly.redirects ?? [];
   const assets = assembly.assets ?? [];
+  const assetContents = assembly.assetContents ?? [];
   const errors = assembly.errors ?? [];
   const headerFindings = analyzeSecurityHeaders(assembly.response);
   const cookieFindings = analyzeCookies(assembly.response);
   const sourcemapFindings = analyzeSourcemapExposure(assembly.response);
   const xssFindings = analyzeXssSignals(assembly.response);
-  const indicators = analyzeExposureIndicators(assembly.response);
+  const jsContentFindings = analyzeJavaScriptContents(assetContents);
+  const htmlIndicators = analyzeExposureIndicators(assembly.response);
+  const jsIndicators = extractJavaScriptIndicators(assetContents);
+  const indicators = [...htmlIndicators, ...jsIndicators];
   const endpointFindings = analyzeEndpointRisks(indicators);
   const findings = [
     ...headerFindings,
     ...cookieFindings,
     ...sourcemapFindings,
     ...xssFindings,
+    ...jsContentFindings,
     ...endpointFindings,
   ];
 
@@ -83,6 +92,7 @@ export function assembleStaticScanResult(
     redirects,
     response: assembly.response,
     assets,
+    assetContents,
     browser: null,
     indicators,
     findings,

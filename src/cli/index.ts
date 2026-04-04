@@ -11,7 +11,7 @@ import { assembleStaticScanResult, buildTargetMetadata } from '../core';
 import { extractAssetCandidates } from '../extractors';
 import { renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
-import { fetchWithMetadata } from '../utils';
+import { fetchScriptAssetContents, fetchWithMetadata } from '../utils';
 
 function buildDefaultScanInput(targetUrl: string): ScanInput {
   return {
@@ -66,12 +66,15 @@ async function main(): Promise<void> {
     }),
   );
 
+  const assetContents = await fetchScriptAssetContents(assets);
+
   const result = assembleStaticScanResult({
     input,
     metadata,
     redirects,
     response,
     assets,
+    assetContents,
     errors: [],
   });
 

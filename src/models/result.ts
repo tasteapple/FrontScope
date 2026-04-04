@@ -1,4 +1,5 @@
 import type { CollectedAsset, ExposureIndicator } from './asset';
+import type { AssetContent } from './asset-content';
 import type { BrowserObservation } from './browser';
 import type { Finding } from './finding';
 import type {
@@ -13,6 +14,7 @@ export interface ScanResult {
   redirects: RedirectEntry[];
   response?: ResponseSnapshot;
   assets: CollectedAsset[];
+  assetContents?: AssetContent[];
   browser?: BrowserObservation | null;
   indicators: ExposureIndicator[];
   findings: Finding[];
