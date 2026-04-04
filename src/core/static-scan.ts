@@ -23,6 +23,7 @@ import type {
   ScanSummary,
   TargetMetadata,
 } from '../models';
+import { normalizeFindings } from '../scoring';
 
 export interface StaticScanAssemblyInput {
   input: ScanInput;
@@ -88,7 +89,7 @@ export async function assembleStaticScanResult(
   const indicators = [...htmlIndicators, ...jsIndicators];
   const endpointFindings = analyzeEndpointRisks(indicators);
   const sqliRiskFindings = analyzeSqliRisk(assembly.response, indicators);
-  const findings = [
+  const findings = normalizeFindings([
     ...headerFindings,
     ...cookieFindings,
     ...htmlSourcemapFindings,
@@ -99,7 +100,7 @@ export async function assembleStaticScanResult(
     ...libraryAdvisoryFindings,
     ...endpointFindings,
     ...sqliRiskFindings,
-  ];
+  ]);
 
   return {
     metadata: assembly.metadata,
