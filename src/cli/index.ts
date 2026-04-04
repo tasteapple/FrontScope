@@ -9,7 +9,7 @@ import {
 } from '../collectors';
 import { assembleStaticScanResult, buildTargetMetadata } from '../core';
 import { extractAssetCandidates } from '../extractors';
-import { renderJsonReport, renderMarkdownReport } from '../report';
+import { renderHtmlReport, renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
 import { fetchScriptAssetContents, fetchWithMetadata } from '../utils';
 
@@ -86,6 +86,7 @@ async function main(): Promise<void> {
 
   writeFileSync(join(outputDir, 'report.json'), renderJsonReport(result), 'utf8');
   writeFileSync(join(outputDir, 'report.md'), renderMarkdownReport(result), 'utf8');
+  writeFileSync(join(outputDir, 'report.html'), renderHtmlReport(result), 'utf8');
 
   console.log(`FrontScope report generated in ${outputDir}`);
 }

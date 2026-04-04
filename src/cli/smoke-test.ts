@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { collectAsset, collectResponseSnapshot, collectHtmlDocument } from '../collectors';
 import { assembleStaticScanResult, buildTargetMetadata } from '../core';
 import { extractAssetCandidates } from '../extractors';
-import { renderJsonReport, renderMarkdownReport } from '../report';
+import { renderHtmlReport, renderJsonReport, renderMarkdownReport } from '../report';
 import type { ScanInput } from '../models';
 
 function buildFixtureScanInput(): ScanInput {
@@ -62,6 +62,7 @@ async function main(): Promise<void> {
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(join(outputDir, 'smoke-report.json'), renderJsonReport(result), 'utf8');
   writeFileSync(join(outputDir, 'smoke-report.md'), renderMarkdownReport(result), 'utf8');
+  writeFileSync(join(outputDir, 'smoke-report.html'), renderHtmlReport(result), 'utf8');
 
   console.log(`FrontScope smoke report generated in ${outputDir}`);
   console.log(`Findings: ${result.summary.totalFindings}, Assets: ${result.assets.length}, Indicators: ${result.indicators.length}`);
