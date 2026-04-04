@@ -1,5 +1,6 @@
 import { extractSameOriginLinks } from '../extractors';
 import type { ScanInput, SiteScanResult } from '../models';
+import { collectAdditionalCrawlSeeds } from './crawl-seeds';
 import { runSinglePageScan } from './single-page-scan';
 
 interface CrawlQueueItem {
@@ -32,7 +33,9 @@ export async function runSiteScan(input: ScanInput): Promise<SiteScanResult> {
     if (!html) continue;
 
     const discoveredLinks = extractSameOriginLinks(html, current.url);
-    for (const link of discoveredLinks) {
+    const additionalSeeds = await collectAdditionalCrawlSeeds(pageResult);
+
+    for (const link of [...discoveredLinks, ...additionalSeeds]) {
       if (!visited.has(link)) {
         queue.push({ url: link, depth: current.depth + 1 });
       }
