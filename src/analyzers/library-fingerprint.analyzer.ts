@@ -65,6 +65,7 @@ export function analyzeLibraryFingerprints(assetContents: AssetContent[]): Findi
           `Detected version: ${signature.version}`,
         ],
         recommendation: signature.recommendation,
+        confidence: 'matched',
       });
     }
   }

@@ -37,6 +37,7 @@ export function analyzeJavaScriptContents(assetContents: AssetContent[]): Findin
           description: `A DOM-controlled source (${source.name}) was found in fetched JavaScript.`,
           evidence: [`Script: ${asset.url}`, `Source: ${source.name}`],
           recommendation: 'Review whether this source reaches dangerous sinks without sanitization.',
+          confidence: 'heuristic',
         });
       }
     }
@@ -52,6 +53,7 @@ export function analyzeJavaScriptContents(assetContents: AssetContent[]): Findin
           description: `A potentially dangerous sink (${sink.name}) was found in fetched JavaScript.`,
           evidence: [`Script: ${asset.url}`, `Sink: ${sink.name}`],
           recommendation: 'Review whether attacker-controlled input can flow into this sink.',
+          confidence: 'heuristic',
         });
       }
     }
@@ -66,6 +68,7 @@ export function analyzeJavaScriptContents(assetContents: AssetContent[]): Findin
         description: 'The fetched JavaScript asset appears to use jQuery 1.10.2, which is an old version and should be reviewed for known issues and upgrade planning.',
         evidence: [`Asset URL: ${asset.url}`],
         recommendation: 'Review jQuery usage and migrate to a modern supported version if feasible.',
+        confidence: 'matched',
       });
     }
   }

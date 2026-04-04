@@ -39,6 +39,7 @@ export function analyzeXssSignals(response?: ResponseSnapshot): Finding[] {
         description: `A DOM-controlled input source (${source.name}) was found in client-side code.`,
         evidence: [`Detected source: ${source.name}`],
         recommendation: 'Trace whether this source is later passed into an unsafe DOM sink without proper sanitization or encoding.',
+        confidence: 'heuristic',
       });
     }
   }
@@ -54,6 +55,7 @@ export function analyzeXssSignals(response?: ResponseSnapshot): Finding[] {
         description: `A potentially dangerous DOM/code execution sink (${sink.name}) was found in client-side code.`,
         evidence: [`Detected sink: ${sink.name}`],
         recommendation: 'Review whether attacker-controlled data can reach this sink and replace it with safer patterns where possible.',
+        confidence: 'heuristic',
       });
     }
   }
@@ -68,6 +70,7 @@ export function analyzeXssSignals(response?: ResponseSnapshot): Finding[] {
       description: 'Inline event handler attributes were found in the HTML response.',
       evidence: ['Detected inline handler pattern such as onclick= or onerror=.'],
       recommendation: 'Prefer event listeners and avoid inline handlers where possible to reduce injection surface.',
+      confidence: 'heuristic',
     });
   }
 

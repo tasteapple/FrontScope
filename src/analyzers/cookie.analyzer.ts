@@ -30,6 +30,7 @@ export function analyzeCookies(response?: ResponseSnapshot): Finding[] {
         description: `The cookie ${cookieName} is set without the Secure attribute.`,
         evidence: [cookie],
         recommendation: 'Set the Secure attribute for cookies that should only travel over HTTPS.',
+        confidence: 'validated',
       });
     }
 
@@ -43,6 +44,7 @@ export function analyzeCookies(response?: ResponseSnapshot): Finding[] {
         description: `The cookie ${cookieName} is set without an explicit SameSite attribute.`,
         evidence: [cookie],
         recommendation: 'Set SameSite=Lax, Strict, or None explicitly based on the application flow.',
+        confidence: 'validated',
       });
     }
   }

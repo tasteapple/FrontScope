@@ -8,7 +8,7 @@ function renderFindings(findings: Finding[]): string {
   return findings
     .map(
       (finding, index) => `### ${index + 1}. ${finding.title}\n
-- Severity: ${finding.severity}\n- Category: ${finding.category}\n- Target: ${finding.target}\n- Description: ${finding.description}\n- Evidence:\n${finding.evidence.map((item: string) => `  - ${item}`).join('\n')}\n- Recommendation: ${finding.recommendation}\n`,
+- Severity: ${finding.severity}\n- Category: ${finding.category}\n- Confidence: ${finding.confidence ?? 'n/a'}\n- Target: ${finding.target}\n- Description: ${finding.description}\n- Evidence:\n${finding.evidence.map((item: string) => `  - ${item}`).join('\n')}\n- Recommendation: ${finding.recommendation}\n`,
     )
     .join('\n');
 }

@@ -31,6 +31,7 @@ export function analyzeSecurityHeaders(response?: ResponseSnapshot): Finding[] {
         description: `The response does not include the ${headerName} header.`,
         evidence: [`Missing header: ${headerName}`],
         recommendation: `Add and validate the ${headerName} header for browser-side protection.`,
+        confidence: 'validated',
       });
     }
   }

@@ -42,6 +42,7 @@ export function analyzeEndpointRisks(indicators: ExposureIndicator[]): Finding[]
       description: `The client-side response exposes an endpoint with potentially security-relevant behavior (${tags.join(', ')}).`,
       evidence: [indicator.value, `Tags: ${tags.join(', ')}`],
       recommendation: 'Review whether the endpoint needs additional authorization, anti-automation protection, or reduced client-side exposure.',
+      confidence: 'matched',
     });
   }
 

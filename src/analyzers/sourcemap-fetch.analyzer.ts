@@ -39,6 +39,7 @@ export async function analyzeFetchedSourcemaps(
             `HTTP status: ${response.statusCode}`,
           ],
           recommendation: 'Avoid publishing production sourcemaps unless they are intentionally exposed and reviewed.',
+          confidence: 'validated',
         });
       } catch {
         findings.push({
@@ -50,6 +51,7 @@ export async function analyzeFetchedSourcemaps(
           description: 'A sourcemap reference exists in fetched JavaScript, but the referenced file was not reachable during validation.',
           evidence: [`Source asset: ${asset.url}`, `Sourcemap URL: ${sourcemapUrl}`],
           recommendation: 'If sourcemaps are not intended for production, remove the reference to reduce accidental disclosure risk.',
+          confidence: 'matched',
         });
       }
     }

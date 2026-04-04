@@ -16,6 +16,8 @@ export type FindingCategory =
   | 'input-handling'
   | 'dom';
 
+export type FindingConfidence = 'heuristic' | 'matched' | 'validated';
+
 export interface Finding {
   id: string;
   title: string;
@@ -25,5 +27,6 @@ export interface Finding {
   description: string;
   evidence: string[];
   recommendation: string;
+  confidence?: FindingConfidence;
   references?: string[];
 }

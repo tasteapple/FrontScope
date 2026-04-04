@@ -69,6 +69,7 @@ export async function mapLibraryDetectionsToFindings(
             `Confidence: ${detection.confidence}`,
           ],
           recommendation: 'Review the detected library version against current supported releases and upgrade guidance.',
+          confidence: sourceLabel === 'remote-live' ? 'validated' : 'matched',
           references: advisory.references,
         });
       }
@@ -85,6 +86,7 @@ export async function mapLibraryDetectionsToFindings(
       description: 'A library was detected in fetched JavaScript, but no advisory mapping matched the detected version in local or remote sources.',
       evidence: [...detection.evidence, `Confidence: ${detection.confidence}`],
       recommendation: 'Expand advisory coverage or add a stronger detector/mapping rule for this library/version.',
+      confidence: 'heuristic',
     });
   }
 

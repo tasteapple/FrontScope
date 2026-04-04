@@ -69,6 +69,7 @@ export function analyzeSqliRisk(
         description: `The response contains a database-related error signature (${signature.name}).`,
         evidence: [`Detected signature: ${signature.name}`],
         recommendation: 'Review error handling to avoid exposing backend query or database details to clients.',
+        confidence: 'matched',
       });
     }
   }
@@ -99,6 +100,7 @@ export function analyzeSqliRisk(
         `Risky params: ${riskyParams.join(', ') || 'none'}`,
       ],
       recommendation: 'Review server-side parameter handling, query construction, and authorization checks for this endpoint.',
+      confidence: riskyParams.length ? 'matched' : 'heuristic',
     });
   }
 
