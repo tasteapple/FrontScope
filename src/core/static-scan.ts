@@ -6,6 +6,8 @@ import {
   analyzeJavaScriptContents,
   analyzeLibraryFingerprints,
   analyzeSecurityHeaders,
+  detectLibraries,
+  mapLibraryDetectionsToFindings,
   analyzeSourcemapExposure,
   analyzeSqliRisk,
   analyzeXssSignals,
@@ -78,7 +80,9 @@ export async function assembleStaticScanResult(
   const fetchedSourcemapFindings = await analyzeFetchedSourcemaps(assetContents);
   const xssFindings = analyzeXssSignals(assembly.response);
   const jsContentFindings = analyzeJavaScriptContents(assetContents);
-  const libraryFindings = analyzeLibraryFingerprints(assetContents);
+  const libraryFingerprintFindings = analyzeLibraryFingerprints(assetContents);
+  const libraryDetections = detectLibraries(assetContents);
+  const libraryAdvisoryFindings = mapLibraryDetectionsToFindings(libraryDetections);
   const htmlIndicators = analyzeExposureIndicators(assembly.response);
   const jsIndicators = extractJavaScriptIndicators(assetContents);
   const indicators = [...htmlIndicators, ...jsIndicators];
@@ -91,7 +95,8 @@ export async function assembleStaticScanResult(
     ...fetchedSourcemapFindings,
     ...xssFindings,
     ...jsContentFindings,
-    ...libraryFindings,
+    ...libraryFingerprintFindings,
+    ...libraryAdvisoryFindings,
     ...endpointFindings,
     ...sqliRiskFindings,
   ];

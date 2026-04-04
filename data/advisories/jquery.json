@@ -1,0 +1,13 @@
+[
+  {
+    "library": "jquery",
+    "advisoryId": "JQ-LEGACY-001",
+    "title": "Legacy jQuery branch detected",
+    "severity": "medium",
+    "affectedVersions": ["1.10.2", "1.12.4", "2.2.4"],
+    "summary": "Older jQuery branches are frequently associated with historical security issues and should be reviewed for upgrade planning.",
+    "references": [
+      "https://jquery.com/upgrade-guide/"
+    ]
+  }
+]

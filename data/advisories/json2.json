@@ -1,0 +1,11 @@
+[
+  {
+    "library": "json2",
+    "advisoryId": "JSON2-LEGACY-001",
+    "title": "Legacy JSON2 compatibility shim detected",
+    "severity": "low",
+    "affectedVersions": ["legacy"],
+    "summary": "Legacy compatibility shims can indicate outdated frontend assumptions and maintenance drag.",
+    "references": []
+  }
+]
