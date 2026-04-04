@@ -68,7 +68,7 @@ async function main(): Promise<void> {
 
   const assetContents = await fetchScriptAssetContents(assets);
 
-  const result = assembleStaticScanResult({
+  const result = await assembleStaticScanResult({
     input,
     metadata,
     redirects,

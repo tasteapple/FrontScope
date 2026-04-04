@@ -2,7 +2,9 @@ import {
   analyzeCookies,
   analyzeEndpointRisks,
   analyzeExposureIndicators,
+  analyzeFetchedSourcemaps,
   analyzeJavaScriptContents,
+  analyzeLibraryFingerprints,
   analyzeSecurityHeaders,
   analyzeSourcemapExposure,
   analyzeSqliRisk,
@@ -63,18 +65,20 @@ function createEmptySummary(
   };
 }
 
-export function assembleStaticScanResult(
+export async function assembleStaticScanResult(
   assembly: StaticScanAssemblyInput,
-): ScanResult {
+): Promise<ScanResult> {
   const redirects = assembly.redirects ?? [];
   const assets = assembly.assets ?? [];
   const assetContents = assembly.assetContents ?? [];
   const errors = assembly.errors ?? [];
   const headerFindings = analyzeSecurityHeaders(assembly.response);
   const cookieFindings = analyzeCookies(assembly.response);
-  const sourcemapFindings = analyzeSourcemapExposure(assembly.response);
+  const htmlSourcemapFindings = analyzeSourcemapExposure(assembly.response);
+  const fetchedSourcemapFindings = await analyzeFetchedSourcemaps(assetContents);
   const xssFindings = analyzeXssSignals(assembly.response);
   const jsContentFindings = analyzeJavaScriptContents(assetContents);
+  const libraryFindings = analyzeLibraryFingerprints(assetContents);
   const htmlIndicators = analyzeExposureIndicators(assembly.response);
   const jsIndicators = extractJavaScriptIndicators(assetContents);
   const indicators = [...htmlIndicators, ...jsIndicators];
@@ -83,9 +87,11 @@ export function assembleStaticScanResult(
   const findings = [
     ...headerFindings,
     ...cookieFindings,
-    ...sourcemapFindings,
+    ...htmlSourcemapFindings,
+    ...fetchedSourcemapFindings,
     ...xssFindings,
     ...jsContentFindings,
+    ...libraryFindings,
     ...endpointFindings,
     ...sqliRiskFindings,
   ];

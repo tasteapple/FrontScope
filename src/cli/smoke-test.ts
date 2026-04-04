@@ -18,7 +18,7 @@ function buildFixtureScanInput(): ScanInput {
   };
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const fixturePath = join(process.cwd(), 'examples', 'sample-page.html');
   const html = readFileSync(fixturePath, 'utf8');
   const input = buildFixtureScanInput();
@@ -49,7 +49,7 @@ function main(): void {
     }),
   );
 
-  const result = assembleStaticScanResult({
+  const result = await assembleStaticScanResult({
     input,
     metadata,
     redirects: [],
@@ -67,4 +67,8 @@ function main(): void {
   console.log(`Findings: ${result.summary.totalFindings}, Assets: ${result.assets.length}, Indicators: ${result.indicators.length}`);
 }
 
-main();
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`FrontScope smoke test failed: ${message}`);
+  process.exit(1);
+});

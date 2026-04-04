@@ -3,6 +3,8 @@ export * from './endpoint.analyzer';
 export * from './exposure.analyzer';
 export * from './headers.analyzer';
 export * from './js-content.analyzer';
+export * from './library-fingerprint.analyzer';
+export * from './sourcemap-fetch.analyzer';
 export * from './sourcemap.analyzer';
 export * from './sqli-risk.analyzer';
 export * from './xss.analyzer';
