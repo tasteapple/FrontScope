@@ -2,6 +2,8 @@
 
 ## Overview / 개요
 
+### 본 레포는 AI agent사용법 및 숙련을 위해 오직 AI Agent만을 사용하여 만들어 졌습니다
+
 **FrontScope** is a client-side security reconnaissance and reporting tool for web applications. It analyzes browser-facing attack surface, collects frontend assets, fetches JavaScript, applies security heuristics, performs low-risk validation, and generates structured reports for both single-page and limited site-level scans.
 
 **FrontScope**는 웹 애플리케이션의 브라우저 노출면을 분석하는 클라이언트 사이드 보안 정찰 및 리포트 도구다. 프론트엔드 자산 수집, JavaScript fetch, 보안 휴리스틱 분석, 저위험 활성 검증, 단일 페이지 및 제한적 사이트 단위 스캔 결과 생성을 지원한다.
